@@ -1,0 +1,77 @@
+/* ===== Гонка ===== */
+.race-controls{
+  max-width:1000px;margin:0 auto;padding:0 20px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end;
+}
+.race-controls label{display:grid;gap:6px;color:var(--muted);font-size:.85rem}
+.race-controls select{width:100%;padding:12px 14px}
+.race-btns{display:flex;gap:10px}
+.race-btns .btn{flex:1}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+.race-stage{
+  position:relative;max-width:1000px;margin:26px auto 0;padding:24px 22px;
+  display:grid;gap:18px;border-radius:var(--r);
+  background:var(--panel);border:1px solid var(--line);
+}
+
+.countdown{
+  position:absolute;inset:0;display:grid;place-items:center;z-index:2;pointer-events:none;
+  font-size:clamp(3rem,10vw,6rem);font-weight:800;letter-spacing:-.04em;
+  background:rgba(5,7,13,.5);border-radius:var(--r);
+}
+.countdown.pop{animation:cd .55s var(--ease) both}
+@keyframes cd{from{transform:scale(1.6);opacity:0}to{transform:none;opacity:1}}
+
+.lane{display:grid;gap:10px}
+.lane-info{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.lname{font-size:.95rem}
+.kmh{font-family:var(--mono);font-size:.8rem;color:var(--a2)}
+.ts{font-family:var(--mono);font-size:.8rem;color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+
+.track{
+  position:relative;height:58px;border-radius:14px;overflow:hidden;
+  border:1px solid var(--line);
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,transparent 2px 48px),
+    rgba(255,255,255,.025);
+}
+.track::after{
+  content:"";position:absolute;top:0;bottom:0;right:14px;width:4px;
+  background:repeating-linear-gradient(180deg,#fff 0 6px,#000 6px 12px);opacity:.6;
+}
+
+.car{
+  position:absolute;left:4px;top:10px;width:92px;height:38px;
+  border-radius:14px 22px 10px 10px;
+  background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 40%,#000));
+  box-shadow:0 8px 20px color-mix(in srgb,var(--c) 45%,transparent);
+  will-change:transform;
+}
+.car::before{
+  content:"";position:absolute;left:30px;top:-9px;width:32px;height:12px;
+  border-radius:9px 9px 0 0;background:rgba(200,230,255,.55);
+}
+.car::after{
+  content:"";position:absolute;left:8px;right:8px;bottom:-7px;height:16px;
+  background:
+    radial-gradient(circle 7px at 12px 8px,#0b0b10 96%,transparent),
+    radial-gradient(circle 7px at calc(100% - 12px) 8px,#0b0b10 96%,transparent);
+}
+.lane.win .car{filter:drop-shadow(0 0 12px var(--c))}
+
+.race-result{
+  max-width:1000px;margin:20px auto 90px;padding:18px 22px;display:grid;gap:6px;
+  border-radius:var(--r);border:1px solid rgba(111,245,176,.35);background:rgba(111,245,176,.06);
+  animation:up .5s var(--ease) both;
+}
+.race-result b{font-size:1.15rem;color:var(--ok)}
+.race-result span{color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+
+@media (max-width:640px){
+  .race-stage{padding:16px 12px}
+  .track{height:50px}
+  .car{width:74px;height:32px;top:9px}
+  .car::before{left:24px}
+  .race-result{margin-bottom:60px}
+}

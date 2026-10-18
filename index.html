@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#05070d">
+<meta name="description" content="AutoWiki — характеристики автомобилей, сравнение моделей, рейтинги и гонка.">
+<title>AutoWiki — Характеристики автомобилей</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://en.wikipedia.org" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="race.css">
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<nav class="nav">
+  <a class="logo" href="#catalog">AUTO<span>WIKI</span></a>
+  <div class="tabs-nav" role="tablist" aria-label="Разделы">
+    <button class="nav-tab" role="tab" data-view="catalog" aria-selected="true">Каталог</button>
+    <button class="nav-tab" role="tab" data-view="compare" aria-selected="false">Сравнение</button>
+    <button class="nav-tab" role="tab" data-view="ratings" aria-selected="false">Рейтинги</button>
+    <button class="nav-tab" role="tab" data-view="race" aria-selected="false">Гонка</button>
+    <button class="nav-tab" role="tab" data-view="favs" aria-selected="false">Избранное<span class="badge" id="favCount">0</span></button>
+  </div>
+</nav>
+
+<main>
+  <!-- КАТАЛОГ -->
+  <section class="view" id="view-catalog">
+    <header class="hero">
+      <span class="eyebrow">Энциклопедия автомобилей</span>
+      <h1>Характеристики любой <span class="grad">марки и модели</span></h1>
+      <p class="lead">Двигатель, разгон, привод и мощность. Сравнивайте модели и смотрите рейтинги.</p>
+
+      <div class="stage" aria-hidden="true"><div class="ring" id="ring"></div></div>
+
+      <div class="search-wrap">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" type="text" placeholder="Марка, модель или страна…" autocomplete="off"
+                 role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list" aria-activedescendant="">
+          <kbd class="hint" aria-hidden="true">/</kbd>
+          <button class="clear" id="clear" hidden aria-label="Очистить поиск">×</button>
+        </div>
+        <ul class="suggest" id="suggest" role="listbox" hidden></ul>
+      </div>
+
+      <div class="stats">
+        <div><b id="statBrands">0</b><span>марок</span></div>
+        <div><b id="statModels">0</b><span>моделей</span></div>
+        <div><b id="statRegions">0</b><span>региона</span></div>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="chips" id="chips" role="group" aria-label="Регион"></div>
+      <label class="sort">Сортировка
+        <select id="sort">
+          <option value="name">По названию</option>
+          <option value="founded">По году основания</option>
+          <option value="power">По мощности</option>
+        </select>
+      </label>
+    </div>
+    <p class="count" id="count" aria-live="polite"></p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- СРАВНЕНИЕ -->
+  <section class="view" id="view-compare" hidden>
+    <div class="page-head">
+      <h2>Сравнение моделей</h2>
+      <p>Выберите две модели. Лучшие значения подсвечиваются. Добавить модель можно из окна марки кнопкой «В сравнение».</p>
+    </div>
+    <div class="compare-pick">
+      <label>Модель A <select id="selA"></select></label>
+      <label>Модель B <select id="selB"></select></label>
+    </div>
+    <div id="compareOut"></div>
+  </section>
+
+  <!-- РЕЙТИНГИ -->
+  <section class="view" id="view-ratings" hidden>
+    <div class="page-head">
+      <h2>Рейтинги</h2>
+      <p>Топ-10 моделей из базы сайта. Нажмите на строку, чтобы открыть модель.</p>
+    </div>
+    <div class="ratings" id="ratings"></div>
+  </section>
+
+  <!-- ГОНКА -->
+  <section class="view" id="view-race" hidden>
+    <div class="page-head">
+      <h2>Гонка на 400 м</h2>
+      <p>Выберите две модели и посмотрите, кто быстрее пройдёт четверть мили. Расчёт упрощённый: постоянное ускорение до максимальной скорости, без учёта передач, сцепления и погоды.</p>
+    </div>
+    <div class="race-controls">
+      <label>Модель A <select id="raceA"></select></label>
+      <label>Модель B <select id="raceB"></select></label>
+      <label>Скорость просмотра
+        <select id="raceSpeed">
+          <option value="1">1×</option>
+          <option value="2">2×</option>
+          <option value="4">4×</option>
+        </select>
+      </label>
+      <div class="race-btns">
+        <button class="btn" id="raceGo">Старт</button>
+        <button class="btn ghost" id="raceReset">Сброс</button>
+      </div>
+    </div>
+    <div class="race-stage">
+      <div class="countdown" id="raceCount" hidden></div>
+      <div class="lane" id="lane0">
+        <div class="lane-info"><b class="lname"></b><span class="kmh">0 км/ч</span><span class="ts">0.00 с</span></div>
+        <div class="track"><div class="car" aria-hidden="true"></div></div>
+      </div>
+      <div class="lane" id="lane1">
+        <div class="lane-info"><b class="lname"></b><span class="kmh">0 км/ч</span><span class="ts">0.00 с</span></div>
+        <div class="track"><div class="car" aria-hidden="true"></div></div>
+      </div>
+    </div>
+    <div class="race-result" id="raceResult" hidden aria-live="polite"></div>
+  </section>
+
+  <!-- ИЗБРАННОЕ -->
+  <section class="view" id="view-favs" hidden>
+    <div class="page-head">
+      <h2>Избранное</h2>
+      <p>Список хранится в этом браузере.</p>
+    </div>
+    <div class="grid" id="favGrid"></div>
+  </section>
+</main>
+
+<footer>
+  <p>Характеристики приблизительные и составлены по открытым источникам. Фото — из Википедии. Перед использованием сверяйте данные с официальными источниками производителей.</p>
+</footer>
+
+<div class="modal-wrap" id="modal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="close" data-close aria-label="Закрыть">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+<script src="race.js"></script>
+</body>
+</html>
